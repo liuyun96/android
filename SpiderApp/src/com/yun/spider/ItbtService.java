@@ -122,7 +122,7 @@ public class ItbtService extends Service {
 							} else {
 								Log.i(TAG, "没有网络");
 							}
-							Thread.sleep(1000 * 3);
+							Thread.sleep(1000 * 10);
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
