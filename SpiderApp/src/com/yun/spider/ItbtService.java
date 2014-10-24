@@ -1,5 +1,7 @@
 package com.yun.spider;
 
+import java.util.Calendar;
+
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Notification;
@@ -13,7 +15,6 @@ import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.text.format.Time;
 import android.util.Log;
 
 @SuppressLint("NewApi")
@@ -104,8 +105,8 @@ public class ItbtService extends Service {
 				public void run() {
 					Log.i(TAG, "启动线程");
 					while (flag) {
-						Time time = new Time();
-						int hour = time.hour;
+						Calendar calendar = Calendar.getInstance();
+						int hour = calendar.get(Calendar.HOUR_OF_DAY);
 						if (hour >= 8 & hour <= 23) {// 在这个区间运行
 							try {
 								appContext = (AppContext) getApplication();// 全局Context
@@ -115,7 +116,7 @@ public class ItbtService extends Service {
 									Log.i(TAG, "type" + type);
 									boolean isWifi = SharedPrefsUtil.getValue(
 											getApplicationContext(),
-											MainActivity.frequency, true);
+											MainActivity.isWifi, true);
 									if (!isWifi) {
 										isRun = true;
 									} else if (isWifi && type == 1) {// 只WiFi下才可以允许

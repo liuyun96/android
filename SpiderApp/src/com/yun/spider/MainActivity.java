@@ -31,6 +31,7 @@ public class MainActivity extends Activity {
 		final Switch switch1 = (Switch) findViewById(R.id.switch1);
 		switch1.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			public void onCheckedChanged(CompoundButton arg0, boolean state) {
+				appContext = (AppContext) getApplication();// 全局Context
 				if (appContext.isNetworkConnected()) {
 					Log.d("switchButton", state ? "开" : "关");
 					Toast.makeText(MainActivity.this, state ? "开" : "关",
