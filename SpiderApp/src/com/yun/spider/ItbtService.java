@@ -113,7 +113,6 @@ public class ItbtService extends Service {
 								if (appContext.isNetworkConnected()) {
 									boolean isRun = false;
 									int type = appContext.getNetworkType();
-									Log.i(TAG, "type" + type);
 									boolean isWifi = SharedPrefsUtil.getValue(
 											getApplicationContext(),
 											MainActivity.isWifi, true);
@@ -135,22 +134,22 @@ public class ItbtService extends Service {
 									int frequency = SharedPrefsUtil.getValue(
 											getApplicationContext(),
 											MainActivity.frequency, 2);
+									Log.i(TAG, "正常情况下每" + frequency + "分钟扫描一次");
 									Thread.sleep(1000 * 60 * frequency);// 每两分钟运行一次
-									Log.i(TAG, "正常情况下每2分钟扫描一次");
 								} else {
-									Thread.sleep(1000 * 60 * 5);
 									Log.i(TAG, "没有网络停5分钟");
+									Thread.sleep(1000 * 60 * 5);
 								}
 							} catch (InterruptedException e) {
 								e.printStackTrace();
 							}
 						} else {
 							try {
+								Log.i(TAG, "服务在这个区间不运行，暂停半个小时");
 								Thread.sleep(1000 * 60 * 30);
 							} catch (InterruptedException e) {
 								e.printStackTrace();
 							}
-							Log.i(TAG, "服务在这个区间不运行，暂停半个小时");
 						}
 					}
 				}

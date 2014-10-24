@@ -169,7 +169,6 @@ public class HttpUtils {
 			while ((line = in.readLine()) != null) {
 				result.append(line);
 			}
-			System.out.println(result.toString());
 			getMethod.releaseConnection();
 			String json = URLEncoder.encode(result.toString(), "UTF-8");
 			return json;
