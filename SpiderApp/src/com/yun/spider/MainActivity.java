@@ -5,54 +5,101 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
 	public static final int CMD_STOP_SERVICE = 0;
-	public static final int cmd_run_wifi = 1;
+	public static final int cmd_run_only_wifi = 1;
 	public static final int cmd_run_all = 2;
+	public static final String isOpen = "is_open";
+	public static final String isWifi = "is_wifi";
+	public static final String frequency = "frequency";
+
+	private AppContext appContext;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		Switch switch1 = (Switch) findViewById(R.id.switch1);
+		final Switch switch1 = (Switch) findViewById(R.id.switch1);
 		switch1.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			public void onCheckedChanged(CompoundButton arg0, boolean state) {
-				Log.d("switchButton", state ? "开" : "关");
-				Toast.makeText(MainActivity.this, state ? "开" : "关",
-						Toast.LENGTH_SHORT).show();
-				if (state) {
-					Intent intent = new Intent(getApplicationContext(),
-							ItbtService.class);
-					startService(intent);
+				if (appContext.isNetworkConnected()) {
+					Log.d("switchButton", state ? "开" : "关");
+					Toast.makeText(MainActivity.this, state ? "开" : "关",
+							Toast.LENGTH_SHORT).show();
+					SharedPrefsUtil.putValue(getApplicationContext(), isOpen,
+							state);
+					if (state) {
+						Intent intent = new Intent(getApplicationContext(),
+								ItbtService.class);
+						startService(intent);
+					} else {
+						Intent intent = new Intent();
+						intent.setAction("AAAAA");
+						intent.putExtra("cmd", CMD_STOP_SERVICE);
+						sendBroadcast(intent);
+					}
+					if (state) {
+						switch1.setText("秒杀正在运行");
+					} else {
+						switch1.setText("秒杀关闭状态");
+					}
 				} else {
-					Intent intent = new Intent();
-					intent.setAction("AAAAA");
-					intent.putExtra("cmd", CMD_STOP_SERVICE);
-					sendBroadcast(intent);
+					Toast.makeText(MainActivity.this, "无法更新状态，网络链接不正常",
+							Toast.LENGTH_SHORT).show();
 				}
 			}
 		});
 
-		Switch switch2 = (Switch) findViewById(R.id.switch2);
+		final Switch switch2 = (Switch) findViewById(R.id.switch2);
 		switch2.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			public void onCheckedChanged(CompoundButton arg0, boolean state) {
-				Log.d("switchButton2", state ? "开" : "关");
-				Intent intent = new Intent();
-				intent.setAction("AAAAA");
+				SharedPrefsUtil
+						.putValue(getApplicationContext(), isWifi, state);
 				if (state) {
-					intent.putExtra("cmd", cmd_run_wifi);
+					switch2.setText("仅wifi下可运行");
 				} else {
-					intent.putExtra("cmd", cmd_run_all);
+					switch2.setText("任何网络下都可以运行");
 				}
-				sendBroadcast(intent);
 			}
 		});
 
+		boolean open = SharedPrefsUtil.getValue(getApplicationContext(),
+				isOpen, false);
+		boolean wifi = SharedPrefsUtil.getValue(getApplicationContext(),
+				isWifi, false);
+		switch1.setChecked(open);
+		switch2.setChecked(wifi);
+		if (open) {
+			switch1.setText("秒杀正在运行");
+		} else {
+			switch1.setText("秒杀关闭状态");
+		}
+		if (wifi) {
+			switch2.setText("仅wifi下可运行");
+		} else {
+			switch2.setText("任何网络下都可以运行");
+		}
+		int fre = SharedPrefsUtil.getValue(getApplicationContext(), frequency,
+				2);
+		final EditText editText = (EditText) findViewById(R.id.frequency);
+		editText.setText("" + fre);
+		Button button = (Button) findViewById(R.id.updateBtn);
+		button.setOnClickListener(new OnClickListener() {
+			public void onClick(View arg0) {
+				CharSequence text = editText.getText();
+				SharedPrefsUtil.putValue(getApplicationContext(), frequency,
+						Integer.valueOf(text.toString()));
+			}
+		});
 	}
 
 	@Override

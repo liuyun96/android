@@ -28,4 +28,23 @@
         android:textOff="只允许wifi下运行"
         android:textOn="任何情况都可以运行" />
 
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <EditText
+            android:id="@+id/frequency"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="输入频率，以每分钟计算"
+            android:textSize="10sp" />
+
+        <Button
+            android:id="@+id/updateBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="更新频率" />
+    </LinearLayout>
+
 </RelativeLayout>

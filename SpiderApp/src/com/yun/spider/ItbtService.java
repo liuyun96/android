@@ -13,6 +13,7 @@ import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.text.format.Time;
 import android.util.Log;
 
 @SuppressLint("NewApi")
@@ -23,14 +24,14 @@ public class ItbtService extends Service {
 	private AppContext appContext;
 	private static final String TAG = "ItbtService";
 
-	boolean isWifi = true;
-
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		Log.i(TAG, "onCreate");
 		cmdReceiver = new CommandReceiver();
 		flag = true;
+		SharedPrefsUtil.putValue(getApplicationContext(), MainActivity.isOpen,
+				true);
 	}
 
 	@Override
@@ -41,8 +42,11 @@ public class ItbtService extends Service {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		Log.i(TAG, "onDestroy");
+		flag = false;
 		this.unregisterReceiver(cmdReceiver);// 取消BroadcastReceiver
+		Log.i(TAG, "onDestroy");
+		SharedPrefsUtil.putValue(getApplicationContext(), MainActivity.isOpen,
+				false);
 	}
 
 	@Override
@@ -78,18 +82,19 @@ public class ItbtService extends Service {
 
 	private class CommandReceiver extends BroadcastReceiver {
 
+		public void stopServer() {
+			flag = false;// 停止线程
+			stopSelf();// 停止服务
+			Log.i(TAG, "收到消息停止服务,关闭服务");
+			SharedPrefsUtil.putValue(getApplicationContext(),
+					MainActivity.isOpen, false);
+		}
+
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			int cmd = intent.getIntExtra("cmd", -1);
 			if (cmd == MainActivity.CMD_STOP_SERVICE) {// 如果等于0
-				flag = false;// 停止线程
-				stopSelf();// 停止服务
-			}
-			if (cmd == MainActivity.cmd_run_wifi) {
-				isWifi = true;
-			}
-			if (cmd == MainActivity.cmd_run_all) {
-				isWifi = false;
+				stopServer();
 			}
 		}
 
@@ -99,32 +104,52 @@ public class ItbtService extends Service {
 				public void run() {
 					Log.i(TAG, "启动线程");
 					while (flag) {
-						try {
-							appContext = (AppContext) getApplication();// 全局Context
-							if (appContext.isNetworkConnected()) {
-								boolean isRun = false;
-								int type = appContext.getNetworkType();
-								Log.i(TAG, "type" + type);
-								if (!isWifi) {
-									isRun = true;
-								} else if (isWifi && type == 1) {// 只WiFi下才可以允许
-									isRun = true;
-								}
-								if (isRun) {// 在wifi条件下才运行
-									boolean check = HttpUtils.checkMiao();
-									if (check) {
-										addNotification(
-												getApplicationContext(),
-												"秒标提示", "亲，有秒标了");
-										Thread.sleep(1000 * 60 * 5);
+						Time time = new Time();
+						int hour = time.hour;
+						if (hour >= 8 & hour <= 23) {// 在这个区间运行
+							try {
+								appContext = (AppContext) getApplication();// 全局Context
+								if (appContext.isNetworkConnected()) {
+									boolean isRun = false;
+									int type = appContext.getNetworkType();
+									Log.i(TAG, "type" + type);
+									boolean isWifi = SharedPrefsUtil.getValue(
+											getApplicationContext(),
+											MainActivity.frequency, true);
+									if (!isWifi) {
+										isRun = true;
+									} else if (isWifi && type == 1) {// 只WiFi下才可以允许
+										isRun = true;
 									}
+									if (isRun) {// 在wifi条件下才运行
+										boolean check = HttpUtils.checkMiao();
+										if (check) {
+											addNotification(
+													getApplicationContext(),
+													"秒标提示", "亲，有秒标了");
+											Thread.sleep(1000 * 60 * 60);// 隔一个小时后运行
+											Log.i(TAG, "有秒标了停一个小时");
+										}
+									}
+									int frequency = SharedPrefsUtil.getValue(
+											getApplicationContext(),
+											MainActivity.frequency, 2);
+									Thread.sleep(1000 * 60 * frequency);// 每两分钟运行一次
+									Log.i(TAG, "正常情况下每2分钟扫描一次");
+								} else {
+									Thread.sleep(1000 * 60 * 5);
+									Log.i(TAG, "没有网络停5分钟");
 								}
-							} else {
-								Log.i(TAG, "没有网络");
+							} catch (InterruptedException e) {
+								e.printStackTrace();
 							}
-							Thread.sleep(1000 * 10);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
+						} else {
+							try {
+								Thread.sleep(1000 * 60 * 30);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+							Log.i(TAG, "服务在这个区间不运行，暂停半个小时");
 						}
 					}
 				}
