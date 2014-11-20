@@ -12,6 +12,7 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
@@ -29,6 +30,10 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		final Switch switch1 = (Switch) findViewById(R.id.switch1);
+		int times = SharedPrefsUtil.getValue(getApplicationContext(),
+				Constant.SHARE_MAIO_TIMES, 0);
+		TextView textView = (TextView) findViewById(R.id.miao_times);
+		textView.setText("" + times);
 		switch1.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			public void onCheckedChanged(CompoundButton arg0, boolean state) {
 				appContext = (AppContext) getApplication();// 全局Context

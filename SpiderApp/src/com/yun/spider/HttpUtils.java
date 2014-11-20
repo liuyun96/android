@@ -318,6 +318,15 @@ public class HttpUtils {
 		return false;
 	}
 
+	/**
+	 * 检查红岭是否有秒标
+	 * @return
+	 */
+	public static boolean checkMy089() {
+		String url = "https://www.my089.com/Loan/default.aspx?&ou=1&lc=20";
+		return false;
+	}
+
 	public static void main(String[] args) {
 		checkMiao();
 	}
