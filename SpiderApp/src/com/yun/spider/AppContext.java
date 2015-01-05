@@ -15,6 +15,8 @@ import java.util.UUID;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.media.AudioManager;
@@ -54,6 +56,16 @@ public class AppContext extends Application {
 		// 注册App异常崩溃处理器
 	/*	Thread.setDefaultUncaughtExceptionHandler(AppException
 				.getAppExceptionHandler());*/
+		//注册守护进程
+		registerMyBroadcastReceiver();
+	}
+	
+	
+	
+	private void registerMyBroadcastReceiver(){
+		IntentFilter filter = new IntentFilter(Intent.ACTION_TIME_TICK); 
+	    MyBroadcastReceiver receiver = new MyBroadcastReceiver(); 
+	    registerReceiver(receiver, filter); 
 	}
 
 

@@ -54,8 +54,7 @@ public class ItbtService extends Service {
 		flag = false;
 		this.unregisterReceiver(cmdReceiver);// 取消BroadcastReceiver
 		Log.i(TAG, "onDestroy");
-		SharedPrefsUtil.putValue(getApplicationContext(), MainActivity.isOpen,
-				false);
+		//SharedPrefsUtil.putValue(getApplicationContext(), MainActivity.isOpen,false);
 	}
 
 	@Override
@@ -65,7 +64,7 @@ public class ItbtService extends Service {
 		intentFilter.addAction("AAAAA");
 		registerReceiver(cmdReceiver, intentFilter);
 		cmdReceiver.doJob();// 启动线程
-		return super.onStartCommand(intent, flags, startId);
+		return START_STICKY;//START_STICKY是service被kill掉后自动
 	}
 
 	@SuppressLint("NewApi")
