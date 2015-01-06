@@ -29,6 +29,12 @@
             android:label="ItbtService"
             android:persistent="true" >
         </service>
+        
+         <service
+            android:name="com.yun.spider.CaipiaoService"
+            android:label="CaipiaoService"
+            android:persistent="true" >
+        </service>
     </application>
 
     <!-- 访问网络的权限 -->

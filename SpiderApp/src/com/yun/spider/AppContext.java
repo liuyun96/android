@@ -25,6 +25,8 @@ import android.net.NetworkInfo;
 import android.os.Handler;
 import android.os.Message;
 
+import com.yun.spider.db.DBHelper;
+
 /**
  * 全局应用程序类：用于保存和调用全局应用配置及访问网络数据
  * 
@@ -58,6 +60,7 @@ public class AppContext extends Application {
 				.getAppExceptionHandler());*/
 		//注册守护进程
 		registerMyBroadcastReceiver();
+		initData();
 	}
 	
 	
@@ -66,6 +69,13 @@ public class AppContext extends Application {
 		IntentFilter filter = new IntentFilter(Intent.ACTION_TIME_TICK); 
 	    MyBroadcastReceiver receiver = new MyBroadcastReceiver(); 
 	    registerReceiver(receiver, filter); 
+	}
+	
+	/**
+	 * 初始化数据库
+	 */
+	public void initData() {
+		DBHelper.getInstance(getApplicationContext());
 	}
 
 

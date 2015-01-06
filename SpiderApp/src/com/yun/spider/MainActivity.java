@@ -1,5 +1,7 @@
 package com.yun.spider;
 
+import com.yun.spider.db.CaiPiaoDB;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,6 +22,7 @@ public class MainActivity extends Activity {
 	public static final int cmd_run_only_wifi = 1;
 	public static final int cmd_run_all = 2;
 	public static final String isOpen = "is_open";
+	public static final String isOpenCaipiao = "is_open_caipiao";
 	public static final String isWifi = "is_wifi";
 	public static final String frequency = "frequency";
 
@@ -34,6 +37,11 @@ public class MainActivity extends Activity {
 				Constant.SHARE_MAIO_TIMES, 0);
 		TextView textView = (TextView) findViewById(R.id.miao_times);
 		textView.setText("" + times);
+
+		TextView period = (TextView) findViewById(R.id.period);
+		CaiPiaoDB caiPiaoDB = new CaiPiaoDB(getApplicationContext());
+		period.setText("当前期" + caiPiaoDB.maxPeriodGet());
+		
 		switch1.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			public void onCheckedChanged(CompoundButton arg0, boolean state) {
 				appContext = (AppContext) getApplication();// 全局Context
@@ -49,7 +57,7 @@ public class MainActivity extends Activity {
 						startService(intent);
 					} else {
 						Intent intent = new Intent();
-						intent.setAction("AAAAA");
+						intent.setAction("ItbtService");
 						intent.putExtra("cmd", CMD_STOP_SERVICE);
 						sendBroadcast(intent);
 					}
@@ -57,6 +65,37 @@ public class MainActivity extends Activity {
 						switch1.setText("秒杀正在运行");
 					} else {
 						switch1.setText("秒杀关闭状态");
+					}
+				} else {
+					Toast.makeText(MainActivity.this, "无法更新状态，网络链接不正常",
+							Toast.LENGTH_SHORT).show();
+				}
+			}
+		});
+		final Switch switch3 = (Switch) findViewById(R.id.switch3);
+		switch3.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			public void onCheckedChanged(CompoundButton arg0, boolean state) {
+				appContext = (AppContext) getApplication();// 全局Context
+				if (appContext.isNetworkConnected()) {
+					Log.d("switchButton", state ? "开" : "关");
+					Toast.makeText(MainActivity.this, state ? "开" : "关",
+							Toast.LENGTH_SHORT).show();
+					SharedPrefsUtil.putValue(getApplicationContext(),
+							isOpenCaipiao, state);
+					if (state) {
+						Intent intent = new Intent(getApplicationContext(),
+								CaipiaoService.class);
+						startService(intent);
+					} else {
+						Intent intent = new Intent();
+						intent.setAction("CaipiaoService");
+						intent.putExtra("cmd", CMD_STOP_SERVICE);
+						sendBroadcast(intent);
+					}
+					if (state) {
+						switch3.setText("彩票打开了");
+					} else {
+						switch3.setText("彩票关闭状态");
 					}
 				} else {
 					Toast.makeText(MainActivity.this, "无法更新状态，网络链接不正常",
