@@ -1,7 +1,5 @@
 package com.yun.spider;
 
-import com.yun.spider.db.CaiPiaoDB;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -25,23 +23,21 @@ public class MainActivity extends Activity {
 	public static final String isOpenCaipiao = "is_open_caipiao";
 	public static final String isWifi = "is_wifi";
 	public static final String frequency = "frequency";
-
+	static final String TAG = "CaipiaoService";
 	private AppContext appContext;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		final Switch switch1 = (Switch) findViewById(R.id.switch1);
 		int times = SharedPrefsUtil.getValue(getApplicationContext(),
 				Constant.SHARE_MAIO_TIMES, 0);
 		TextView textView = (TextView) findViewById(R.id.miao_times);
 		textView.setText("" + times);
-
-		TextView period = (TextView) findViewById(R.id.period);
-		CaiPiaoDB caiPiaoDB = new CaiPiaoDB(getApplicationContext());
-		period.setText("当前期" + caiPiaoDB.maxPeriodGet());
-		
+		final Switch switch1 = (Switch) findViewById(R.id.switch1);
+		boolean open = SharedPrefsUtil.getValue(getApplicationContext(),
+				isOpen, false);
+		switch1.setChecked(open);
 		switch1.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			public void onCheckedChanged(CompoundButton arg0, boolean state) {
 				appContext = (AppContext) getApplication();// 全局Context
@@ -72,37 +68,6 @@ public class MainActivity extends Activity {
 				}
 			}
 		});
-		final Switch switch3 = (Switch) findViewById(R.id.switch3);
-		switch3.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-			public void onCheckedChanged(CompoundButton arg0, boolean state) {
-				appContext = (AppContext) getApplication();// 全局Context
-				if (appContext.isNetworkConnected()) {
-					Log.d("switchButton", state ? "开" : "关");
-					Toast.makeText(MainActivity.this, state ? "开" : "关",
-							Toast.LENGTH_SHORT).show();
-					SharedPrefsUtil.putValue(getApplicationContext(),
-							isOpenCaipiao, state);
-					if (state) {
-						Intent intent = new Intent(getApplicationContext(),
-								CaipiaoService.class);
-						startService(intent);
-					} else {
-						Intent intent = new Intent();
-						intent.setAction("CaipiaoService");
-						intent.putExtra("cmd", CMD_STOP_SERVICE);
-						sendBroadcast(intent);
-					}
-					if (state) {
-						switch3.setText("彩票打开了");
-					} else {
-						switch3.setText("彩票关闭状态");
-					}
-				} else {
-					Toast.makeText(MainActivity.this, "无法更新状态，网络链接不正常",
-							Toast.LENGTH_SHORT).show();
-				}
-			}
-		});
 
 		final Switch switch2 = (Switch) findViewById(R.id.switch2);
 		switch2.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -117,11 +82,8 @@ public class MainActivity extends Activity {
 			}
 		});
 
-		boolean open = SharedPrefsUtil.getValue(getApplicationContext(),
-				isOpen, false);
 		boolean wifi = SharedPrefsUtil.getValue(getApplicationContext(),
 				isWifi, false);
-		switch1.setChecked(open);
 		switch2.setChecked(wifi);
 		if (open) {
 			switch1.setText("秒杀正在运行");
@@ -152,6 +114,19 @@ public class MainActivity extends Activity {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
+	}
+
+	/*****
+	 * 点击行
+	 * 
+	 * @param view
+	 */
+	public void goCaiPiao(View view) {
+		Intent intent = new Intent(this, CaipiaoActivity.class);
+		Bundle bundle = new Bundle();
+		bundle.putInt("view_id", view.getId());
+		intent.putExtras(bundle);
+		startActivity(intent);
 	}
 
 }

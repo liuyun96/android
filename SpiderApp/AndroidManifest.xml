@@ -23,6 +23,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
+           <activity
+            android:name="com.yun.spider.CaipiaoActivity"
+            android:configChanges="keyboardHidden|navigation|orientation"
+            android:screenOrientation="portrait" />
 
         <service
             android:name="com.yun.spider.ItbtService"

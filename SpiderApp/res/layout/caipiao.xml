@@ -1,0 +1,87 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin" >
+
+    <Switch
+        android:id="@+id/switch3"
+        android:layout_width="fill_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:textOff="彩票打开"
+        android:textOn="彩票关闭" />
+
+    <TextView
+        android:id="@+id/period"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp" >
+    </TextView>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="300dp"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/spinnerText"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
+        </TextView>
+
+        <Spinner
+            android:id="@+id/Spinner01"
+            android:layout_width="100px"
+            android:layout_height="100px" >
+        </Spinner>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="200dp"
+        android:orientation="horizontal" >
+
+        <EditText
+            android:id="@+id/weishu"
+            android:layout_width="100px"
+            android:layout_height="50px"
+            android:hint="尾数"
+            android:textSize="10sp" />
+
+        <EditText
+            android:id="@+id/nums"
+            android:layout_width="300px"
+            android:layout_height="50px"
+            android:hint="多数字"
+            android:textSize="10sp" />
+        
+        <EditText
+            android:id="@+id/qishu"
+            android:layout_width="100px"
+            android:layout_height="50px"
+            android:hint="多少期"
+            android:text="100"
+            android:textSize="10sp" />
+
+        <Button
+            android:id="@+id/total"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="统计" />
+    </LinearLayout>
+
+    <WebView
+        android:id="@+id/webview"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="500dp" />
+
+</RelativeLayout>

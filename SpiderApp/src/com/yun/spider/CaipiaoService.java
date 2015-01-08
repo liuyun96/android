@@ -56,6 +56,20 @@ public class CaipiaoService extends BaseService {
 		return TAG;
 	}
 
+	/**
+	 * 接收消息关闭当前的service
+	 * 
+	 * @author Administrator
+	 * 
+	 */
+
+	private void sendBroadcastActivity() {
+		Intent intent = new Intent();
+		intent.setAction(CaipiaoActivity.UpdateUiReceiver);
+		intent.putExtra("cmd", 1);
+		sendBroadcast(intent);
+	}
+
 	class CaipiaoReceiver extends CommandReceiver {
 
 		@Override
@@ -64,7 +78,7 @@ public class CaipiaoService extends BaseService {
 			CaiPiaoDB caiPiaoDB = new CaiPiaoDB(getApplicationContext());
 			Integer period = caiPiaoDB.maxPeriodGet();
 			Integer newPeriod = CaiPiaoUtil.newPeriod();
-			if (newPeriod != period) {
+			if (!newPeriod.equals(period)) {
 				Integer beginPeriod = null;
 				Integer endPeriod = null;
 				if (period != null) {
@@ -81,6 +95,7 @@ public class CaipiaoService extends BaseService {
 				if (!list.isEmpty()) {
 					for (Caipiao cai : list) {
 						caiPiaoDB.insert(cai);
+						sendBroadcastActivity();
 					}
 				}
 			}
